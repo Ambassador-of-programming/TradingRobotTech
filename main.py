@@ -13,7 +13,6 @@ def main(page: ft.Page):
         language_system = data['system_language']
 
     if language_system == 'Russian':
-        # Russian language
         from language_system.ru.navigation.FletRouter import Router
         from language_system.ru.navigation.navbar import NavBar
 
@@ -27,67 +26,10 @@ def main(page: ft.Page):
         )
         page.go('/')
 
-    elif language_system == 'English':
-        # English language
-        from language_system.en.navigation.FletRouter import Router
-        from language_system.en.navigation.navbar import NavBar
+    # elif language_system == 'English':
+    #     from language_system.en.navigation.FletRouter import Router
+    #     from language_system.en.navigation.navbar import NavBar
 
-        page.appbar = NavBar(page)
-        myRouter = Router(page)
-
-        page.on_route_change = myRouter.route_change
-
-        page.add(
-            myRouter.body
-        )
-        page.go('/')
-
-    elif language_system == 'Greek':
-        # English language
-        from language_system.en.navigation.FletRouter import Router
-        from language_system.en.navigation.navbar import NavBar
-
-        page.appbar = NavBar(page)
-        myRouter = Router(page)
-
-        page.on_route_change = myRouter.route_change
-
-        page.add(
-            myRouter.body
-        )
-        page.go('/')
-
-    elif language_system == 'Kyrgyz':
-        # English language
-        from language_system.en.navigation.FletRouter import Router
-        from language_system.en.navigation.navbar import NavBar
-
-        page.appbar = NavBar(page)
-        myRouter = Router(page)
-
-        page.on_route_change = myRouter.route_change
-
-        page.add(
-            myRouter.body
-        )
-        page.go('/')
-
-    else:
-        # Russian language
-        from language_system.ru.navigation.FletRouter import Router
-        from language_system.ru.navigation.navbar import NavBar
-
-        page.appbar = NavBar(page)
-        myRouter = Router(page)
-
-        page.on_route_change = myRouter.route_change
-
-        page.add(
-            myRouter.body
-        )
-        page.go('/')
-
-    # elif language_system == 'gr':
     #     page.appbar = NavBar(page)
     #     myRouter = Router(page)
 
@@ -97,5 +39,47 @@ def main(page: ft.Page):
     #         myRouter.body
     #     )
     #     page.go('/')
+
+    # elif language_system == 'Greek':
+    #     from language_system.en.navigation.FletRouter import Router
+    #     from language_system.en.navigation.navbar import NavBar
+
+    #     page.appbar = NavBar(page)
+    #     myRouter = Router(page)
+
+    #     page.on_route_change = myRouter.route_change
+
+    #     page.add(
+    #         myRouter.body
+    #     )
+    #     page.go('/')
+
+    # elif language_system == 'Kyrgyz':
+    #     from language_system.en.navigation.FletRouter import Router
+    #     from language_system.en.navigation.navbar import NavBar
+
+    #     page.appbar = NavBar(page)
+    #     myRouter = Router(page)
+
+    #     page.on_route_change = myRouter.route_change
+
+    #     page.add(
+    #         myRouter.body
+    #     )
+    #     page.go('/')
+
+    else:
+        from language_system.ru.navigation.FletRouter import Router
+        from language_system.ru.navigation.navbar import NavBar
+
+        page.appbar = NavBar(page)
+        myRouter = Router(page)
+
+        page.on_route_change = myRouter.route_change
+
+        page.add(
+            myRouter.body
+        )
+        page.go('/')
 
 ft.app(target=main, assets_dir="assets")

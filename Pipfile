@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 aiogram = "*"
 flet = "*"
+tradingview-ta = "*"
+python-binance = "*"
 
 [dev-packages]
 

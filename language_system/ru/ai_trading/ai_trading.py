@@ -1,5 +1,5 @@
 import flet as ft
-
+import time
 def Ai_Trading(page):
 
     language_selects = ft.Dropdown(
@@ -11,21 +11,21 @@ def Ai_Trading(page):
         )
     error_language = ft.Text(color='red')
     def language_select(e):
-        pass
-            # if language_selects.value == None:
-            #     error_language.color = 'red'
-            #     error_language.value = "Нельзя выбрать пустое значение" 
-            #     error_language.update()
-            #     time.sleep(5)
-            #     error_language.value = ''
-            #     error_language.update()
-            # else:
-            #     error_language.color = 'green'
-            #     error_language.value = 'Успешно обновлено'
-            #     error_language.update()
-            #     time.sleep(5)
-            #     error_language.value = ''
-            #     error_language.update()
+        # pass
+            if language_selects.value == None:
+                error_language.color = 'red'
+                error_language.value = "Нельзя выбрать пустое значение" 
+                error_language.update()
+                time.sleep(5)
+                error_language.value = ''
+                error_language.update()
+            else:
+                error_language.color = 'green'
+                error_language.value = 'Успешно обновлено'
+                error_language.update()
+                time.sleep(5)
+                error_language.value = ''
+                error_language.update()
     language_submit = ft.ElevatedButton(text="Выбрать", icon=ft.icons.LANGUAGE, on_click=language_select)
 
     content = ft.Column(

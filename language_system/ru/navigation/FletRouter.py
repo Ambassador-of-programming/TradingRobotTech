@@ -11,6 +11,10 @@ from language_system.ru.crypto_arbitrage.arbitrage import Crypto_Arbitrage
 from language_system.ru.support.support import Support
 from language_system.ru.settings.update import Update_app
 from language_system.ru.notes.notes import Notes
+from language_system.ru.trading_strategy.various_strategies.tradingview_ta.select_ma_s import Select_ta_ma_osc
+from language_system.ru.trading_strategy.various_strategies.tradingview_ta.moving_averages.select_ma_ave import Select_ma_all_strategy
+from language_system.ru.trading_strategy.various_strategies.tradingview_ta.oscillators.select_osc import Select_osc_all_strategy
+
 
 class Router:
 
@@ -20,6 +24,10 @@ class Router:
         self.routes = {
             "/": Trading_Strategy(page),
             "/trading_strategy": Trading_Strategy(page),
+            "/trading_strategy/select_ma_osc": Select_ta_ma_osc(page),
+            "/trading_strategy/select_ma_osc/moving_averages/select_ma_all_strategy": Select_ma_all_strategy(page),
+            "/trading_strategy/select_ma_osc/oscillators/select_osc_all_strategy": Select_osc_all_strategy(page),
+
             "/ai_trading": Ai_Trading(page),
             "/crypto_arbitrage": Crypto_Arbitrage(page),
             "/parsing_news": Parsing_News(page),
