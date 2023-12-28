@@ -12,10 +12,8 @@ def NavBar(page):
                 ft.IconButton(ft.icons.TASK_ALT, on_click=lambda _: page.go('/trading_strategy')),
                 ft.IconButton(ft.icons.ROCKET, on_click=lambda _: page.go('/ai_trading')),
                 ft.IconButton(ft.icons.TASK_ROUNDED, on_click=lambda _: page.go('/crypto_arbitrage')),
-                ft.IconButton(ft.icons.NEWSPAPER, on_click=lambda _: page.go('/parsing_news')),
                 ft.IconButton(ft.icons.SETTINGS_CELL, on_click=lambda _: page.go('/backtestings')),
                 ft.IconButton(ft.icons.ANALYTICS, on_click=lambda _: page.go('/statistics')),
-                ft.IconButton(ft.icons.NOTES, on_click=lambda _: page.go('/notes')),
                 ft.IconButton(ft.icons.SUPPORT_AGENT, on_click=lambda _: page.go('/support')),
                 ft.IconButton(ft.icons.SETTINGS_ROUNDED, on_click=lambda _: page.go('/settings')),
             ]

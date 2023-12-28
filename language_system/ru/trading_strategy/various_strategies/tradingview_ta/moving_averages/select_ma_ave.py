@@ -56,43 +56,132 @@ def Select_ma_all_strategy(page):
         def ma_all_go(self, event):
             if all([self.ma_all_select.value, self.symbol.value,self.exchange.value,
                     self.amount.value, self.interval.value, self.trade_types.value]):
-                if self.ma_all_select.value == "EMA10":
-                    with open('config\settings_secret.json', 'r') as file:
-                        data = json.load(file)
-                        keys_api = data["keys_api"]
-                        client = Client(keys_api['binance']['api_key'], keys_api['binance']['secret_key'], {"verify": True, "timeout": None})
-                        
-                        balance = float(client.get_asset_balance(asset='USDT')['free'])
-                        print(f'Ваш баланс на USDT: {balance}')
+                
+                with open('config\settings_secret.json', 'r') as file:
+                    data = json.load(file)
+                    keys_api = data["keys_api"]
+                client = Client(keys_api['binance']['api_key'], keys_api['binance']['secret_key'], {"verify": True, "timeout": None})
+                
+                if self.ma_all_select.value == "RECOMMENDATION":
+                    last_order = {
+                        self.symbol.value: 'sell',
+                        'amount': None,
+                        'transactTime': None,
+                        'cummulativeQuoteQty': None,
+                        }
+                    
+                    while True:
+                        ta_handler = TA_Handler(
+                            symbol=self.symbol.value,
+                            exchange=self.exchange.value,
+                            screener="CRYPTO",
+                            interval=getattr(Interval, self.interval.value),   # Здесь ставится интервал времени трейдинга
+                        )
 
-                elif self.ma_all_select.value == "EMA20":
-                    pass
-                elif self.ma_all_select.value == "EMA30":
-                    pass
-                elif self.ma_all_select.value == "EMA50":
-                    pass
-                elif self.ma_all_select.value == "EMA100":
-                    pass
-                elif self.ma_all_select.value == "EMA200":
-                    pass
-                elif self.ma_all_select.value == "HullMA":
-                    pass
-                elif self.ma_all_select.value == "Ichimoku":
-                    pass
-                elif self.ma_all_select.value == "SMA10":
-                    pass
-                elif self.ma_all_select.value == "SMA20":
-                    pass
-                elif self.ma_all_select.value == "SMA30":
-                    pass
-                elif self.ma_all_select.value == "SMA50":
-                    pass
-                elif self.ma_all_select.value == "SMA100":
-                    pass
-                elif self.ma_all_select.value == "SMA200":
-                    pass
-                elif self.ma_all_select.value == "VWMA":
-                    pass
+                        try:
+                            rec = ta_handler.get_analysis().moving_averages[self.ma_all_select.value]
+                        except:
+                            continue
+
+                        # закрываем сделку
+                        if last_order[self.symbol.value] == "buy" and ("SELL" in rec):
+                            try:
+                                sell_order = client.order_market_sell(
+                                    symbol=self.symbol.value,
+                                    quantity=last_order['amount'])
+                                # print(sell_order)
+                            except:
+                                last_order['amount'] = int(last_order['amount'])
+                                continue
+                        
+                        # открываем сделку
+                        if last_order[self.symbol.value] == "sell" and ("BUY" in rec):
+                            buy_order = client.order_market_buy(
+                                symbol=self.symbol.value,
+                                quoteOrderQty=self.amount.value)
+                            last_order['cummulativeQuoteQty'] = buy_order['cummulativeQuoteQty']
+                            last_order['orderId'] = buy_order['orderId']
+                            last_order['origQty'] = buy_order['origQty']
+                            last_order['commission'] = buy_order['fills'][0]['commission']
+                            last_order['price'] = buy_order['fills'][0]['price']
+                            if last_order['commission'] > 0:
+                                proverka = last_order['origQty'] - last_order['commission'] - last_order['commission'] # здесь количество монет 2 раза отнимает от суммы коммисии
+                                last_order['origQty'] = proverka
+                                step_size = float(client.get_symbol_info(self.symbol.value)['filters'][2]['stepSize'])
+                                a = step_size  # общая длина шага (к примеру 45.444)
+                                c = str(a) # конвертируем шаг в стринг
+                                c.split('.') # разбиваем строку шаг по . и получаем список ['0', '005']
+                                dot_position = len(c.split('.')[1]) # получаем длину второго элемента списка шага '005'
+                                last_order['stepSize'] = dot_position # сохраняем длину шага в dict в значениях (индекс 5)
+                                n = dot_position
+                                a = last_order['origQty']
+                                last_order['origQty'] = int(a*10**n)/10**n
+                                if dot_position == 0:
+                                    last_order['origQty'] = int(last_order['origQty'])
+
+                else:
+                    last_order = {
+                        self.symbol.value: 'sell',
+                        'transactTime': None,
+                        'cummulativeQuoteQty': None,
+                        'price': None,
+                        'commission': None,
+                        'origQty': None,
+                        'orderId': None,
+                        'stepSize': None,
+
+                        }
+                    while True:                        
+                        ta_handler = TA_Handler(
+                            symbol=self.symbol.value,
+                            exchange=self.exchange.value,
+                            screener="CRYPTO",
+                            interval=getattr(Interval, self.interval.value),   # Здесь ставится интервал времени трейдинга
+                        )
+                        try:
+                            rec = ta_handler.get_analysis().moving_averages['COMPUTE'][self.ma_all_select.value]
+                        except:
+                            continue
+                        
+                        # закрываем сделку
+                        if last_order[self.symbol.value] == "buy" and ("SELL" in rec):
+                            try:
+                                sell_order = client.order_market_sell(
+                                    symbol=self.symbol.value,
+                                    quantity=last_order['origQty'])
+                                # print(sell_order)
+                            except:
+                                last_order['origQty'] = int(last_order['origQty'])
+                                continue
+                            last_order["transactTime"] = sell_order['transactTime']
+                            last_order['cummulativeQuoteQty'] = sell_order['cummulativeQuoteQty']
+                            last_order['price'] = sell_order['fills'][0]['price']
+                            last_order = "sell"
+
+                        # открываем сделку
+                        if last_order[self.symbol.value] == "sell" and ("BUY" in rec):
+                            buy_order = client.order_market_buy(
+                                symbol=self.symbol.value,
+                                quoteOrderQty=self.amount.value)
+                            last_order['cummulativeQuoteQty'] = buy_order['cummulativeQuoteQty']
+                            last_order['orderId'] = buy_order['orderId']
+                            last_order['origQty'] = buy_order['origQty']
+                            last_order['commission'] = buy_order['fills'][0]['commission']
+                            last_order['price'] = buy_order['fills'][0]['price']
+                            if last_order['commission'] > 0:
+                                proverka = last_order['origQty'] - last_order['commission'] - last_order['commission'] # здесь количество монет 2 раза отнимает от суммы коммисии
+                                last_order['origQty'] = proverka
+                                step_size = float(client.get_symbol_info(self.symbol.value)['filters'][2]['stepSize'])
+                                a = step_size  # общая длина шага (к примеру 45.444)
+                                c = str(a) # конвертируем шаг в стринг
+                                c.split('.') # разбиваем строку шаг по . и получаем список ['0', '005']
+                                dot_position = len(c.split('.')[1]) # получаем длину второго элемента списка шага '005'
+                                last_order['stepSize'] = dot_position # сохраняем длину шага в dict в значениях (индекс 5)
+                                n = dot_position
+                                a = last_order['origQty']
+                                last_order['origQty'] = int(a*10**n)/10**n
+                                if dot_position == 0:
+                                    last_order['origQty'] = int(last_order['origQty'])
             else:
                 self.error_ma_osc.color = 'red'
                 self.error_ma_osc.value = "Нельзя выбрать пустое значение" 
@@ -131,7 +220,7 @@ def Select_ma_all_strategy(page):
                     self.error_ma_osc.update()
             
         def ma_all_submit(self):
-            return ft.ElevatedButton(text="Выбрать",icon=ft.icons.LANGUAGE, on_click=self.ma_all_go)
+            return ft.ElevatedButton(text="Старт",icon=ft.icons.LANGUAGE, on_click=self.ma_all_go)
         
         def screener_submit(self):
             return ft.ElevatedButton(text="Скринер",icon=ft.icons.SAFETY_CHECK_OUTLINED, on_click=self.screener)
