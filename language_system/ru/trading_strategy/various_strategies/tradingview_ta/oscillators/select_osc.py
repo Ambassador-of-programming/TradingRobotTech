@@ -1,9 +1,9 @@
 from tradingview_ta import TA_Handler, Interval
-import flet as ft
 from binance.client import Client
+import flet as ft
 import json
-
 import time
+
 
 def Select_osc_all_strategy(page):
     class Select_osc:
@@ -26,9 +26,6 @@ def Select_osc_all_strategy(page):
                            ft.dropdown.Option("UO"),
                            ]
                 )
-            self.symbol = ft.TextField(label='Введите Symbol', hint_text='пример: BTCUSDT', width = 280,)
-            self.exchange = ft.TextField(label='Введите Exchange', hint_text='пример: BINANCE', width = 280,)
-            self.amount = ft.TextField(label='Введите сумму', hint_text='сумма в долларах: 50', width = 280,)
             self.interval = ft.Dropdown(
                 width = 280,
                 label = 'Выберите интервал',
@@ -44,6 +41,14 @@ def Select_osc_all_strategy(page):
                            ft.dropdown.Option("INTERVAL_1_MONTH"),
                            ],
                 )
+            self.exchange = ft.Dropdown(
+                width = 280,
+                label = 'Выберите интервал',
+                options = [ft.dropdown.Option("Binance"),
+                           ],
+                )
+            self.symbol = ft.TextField(label='Введите Symbol', hint_text='пример: BTCUSDT', width = 280,)
+            self.amount = ft.TextField(label='Введите сумму', hint_text='сумма в долларах: 50', width = 280,)
             self.trade_types = ft.Dropdown(
                 width = 280,
                 label = 'Типы торгов',
@@ -120,7 +125,6 @@ def Select_osc_all_strategy(page):
                                     last_order['origQty'] = int(last_order['origQty'])
                 
                 else:
-                    print(self.osc_all_select.value)
                     last_order = {
                         self.symbol.value: 'sell',
                         'transactTime': None,

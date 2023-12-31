@@ -4,9 +4,10 @@ import json
 from current_version import current_version
 
 def main(page: ft.Page):
+    
     page.title = f'TradingRobotTech {current_version}'
     page.theme_mode = "dark"
-    page.window_full_screen = True
+    # page.window_full_screen = True
 
     with open('config\settings_secret.json', 'r') as file:
         data = json.load(file)

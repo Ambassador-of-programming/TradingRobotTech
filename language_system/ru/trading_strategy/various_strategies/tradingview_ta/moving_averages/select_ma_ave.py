@@ -29,9 +29,6 @@ def Select_ma_all_strategy(page):
                            ft.dropdown.Option("VWMA"),
                            ]
                 )
-            self.symbol = ft.TextField(label='Введите Symbol', hint_text='пример: BTCUSDT', width = 280,)
-            self.exchange = ft.TextField(label='Введите Exchange', hint_text='пример: BINANCE', width = 280,)
-            self.amount = ft.TextField(label='Введите сумму', hint_text='сумма в долларах: 50', width = 280,)
             self.interval = ft.Dropdown(
                 width = 280,
                 label = 'Выберите интервал',
@@ -47,6 +44,14 @@ def Select_ma_all_strategy(page):
                            ft.dropdown.Option("INTERVAL_1_MONTH"),
                            ],
                 )
+            self.exchange = ft.Dropdown(
+                width = 280,
+                label = 'Выберите Exchange',
+                options = [ft.dropdown.Option("Binance"),
+                          ],
+                )
+            self.symbol = ft.TextField(label='Введите Symbol', hint_text='пример: BTCUSDT', width = 280,)
+            self.amount = ft.TextField(label='Введите сумму', hint_text='сумма в долларах: 50', width = 280,)
             self.trade_types = ft.Dropdown(
                 width = 280,
                 label = 'Типы торгов',

@@ -8,6 +8,7 @@ aiogram = "*"
 flet = "*"
 tradingview-ta = "*"
 python-binance = "*"
+nuitka = "==1.8.6"
 
 [dev-packages]
 

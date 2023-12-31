@@ -12,9 +12,10 @@ def Update_app(page):
             alignment=ft.MainAxisAlignment.CENTER
             ),
 
+
             ft.Row(
                 [
-                    ft.Text("Обновление системы")
+                    ft.Text("Раздел обновление находится на стадии разработки. В новых обновлениях она появится")
                 ]
             ),
         ]
