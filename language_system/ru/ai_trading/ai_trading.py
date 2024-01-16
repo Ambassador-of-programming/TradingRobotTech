@@ -1,7 +1,7 @@
 import flet as ft
-import time
-def Ai_Trading(page):
+import asyncio
 
+async def ai_trading(page):
     language_selects = ft.Dropdown(
             width = 280,
             label = 'Выберите AI',
@@ -10,23 +10,25 @@ def Ai_Trading(page):
                        ],
         )
     error_language = ft.Text(color='red')
-    def language_select(e):
+    async def language_select(e):
         # pass
-            if language_selects.value == None:
-                error_language.color = 'red'
-                error_language.value = "Нельзя выбрать пустое значение" 
-                error_language.update()
-                time.sleep(5)
-                error_language.value = ''
-                error_language.update()
-            else:
-                error_language.color = 'green'
-                error_language.value = 'Успешно обновлено'
-                error_language.update()
-                time.sleep(5)
-                error_language.value = ''
-                error_language.update()
-    language_submit = ft.ElevatedButton(text="Выбрать", icon=ft.icons.LANGUAGE, on_click=language_select)
+        if language_selects.value == None:
+            error_language.color = 'red'
+            error_language.value = "Нельзя выбрать пустое значение" 
+            await error_language.update_async()
+            await asyncio.sleep(5)
+            error_language.value = ''
+            await error_language.update_async()
+        else:
+            error_language.color = 'green'
+            error_language.value = 'Успешно обновлено'
+            await error_language.update_async()
+            await asyncio.sleep(5)
+            error_language.value = ''
+            await error_language.update_async()
+        
+    async def language_submit():
+        return ft.ElevatedButton(text="Выбрать", icon=ft.icons.LANGUAGE, on_click=language_select)
 
     content = ft.Column(
         [
@@ -40,7 +42,8 @@ def Ai_Trading(page):
             ft.Row(
                 [
                     language_selects,
-                    language_submit
+                    error_language,
+                    await language_submit()
                 ],
                 alignment=ft.MainAxisAlignment.CENTER
             ),

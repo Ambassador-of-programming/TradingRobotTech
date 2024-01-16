@@ -1,7 +1,6 @@
 import flet as ft
 
-def Crypto_Arbitrage(page):
-    
+async def crypto_arbitrage(page):
     content = ft.Column(
         [
             ft.Row(

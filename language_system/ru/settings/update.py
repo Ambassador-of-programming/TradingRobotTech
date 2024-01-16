@@ -1,13 +1,15 @@
 import flet as ft
+import aiohttp
 
-def Update_app(page):
-    
+async def update_app(page):
     content = ft.Column(
         [
             ft.Row(
             [
-                ft.Text("Обновление", size=30), 
-                ft.IconButton(icon=ft.icons.NEWSPAPER, icon_size=30),
+                ft.Text(
+                    "Центр обновлений TradingRobotTech", 
+                    size=30,
+                    ), 
                 ], 
             alignment=ft.MainAxisAlignment.CENTER
             ),
@@ -15,7 +17,8 @@ def Update_app(page):
 
             ft.Row(
                 [
-                    ft.Text("Раздел обновление находится на стадии разработки. В новых обновлениях она появится")
+                    ft.Text(
+                        "Раздел обновление находится на стадии разработки. В новых обновлениях она появится",)
                 ]
             ),
         ]

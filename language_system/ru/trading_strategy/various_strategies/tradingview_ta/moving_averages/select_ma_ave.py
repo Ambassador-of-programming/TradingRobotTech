@@ -2,9 +2,9 @@ from tradingview_ta import TA_Handler, Interval
 from binance.client import Client
 import flet as ft
 import json
-import time
+import asyncio
 
-def Select_ma_all_strategy(page):
+async def select_ma_all_strategy(page):
     class Select_ma:
         def __init__(self) -> None:
             self.error_ma_osc = ft.Text(color='red')
@@ -58,7 +58,7 @@ def Select_ma_all_strategy(page):
                 options = [ft.dropdown.Option("Спот")],
             )
             
-        def ma_all_go(self, event):
+        async def ma_all_go(self, event):
             if all([self.ma_all_select.value, self.symbol.value,self.exchange.value,
                     self.amount.value, self.interval.value, self.trade_types.value]):
                 
@@ -190,12 +190,12 @@ def Select_ma_all_strategy(page):
             else:
                 self.error_ma_osc.color = 'red'
                 self.error_ma_osc.value = "Нельзя выбрать пустое значение" 
-                self.error_ma_osc.update()
-                time.sleep(5)
+                await self.error_ma_osc.update_async()
+                await asyncio.sleep(5)
                 self.error_ma_osc.value = ''
-                self.error_ma_osc.update()
+                await self.error_ma_osc.update_async()
         
-        def screener(self, event):
+        async def screener(self, event):
             if all([self.symbol.value, self.exchange.value, self.interval.value, self.ma_all_select.value]):
                 if self.ma_all_select.value == 'RECOMMENDATION':
                     tesla = TA_Handler(
@@ -206,10 +206,10 @@ def Select_ma_all_strategy(page):
                     ).get_analysis().moving_averages['RECOMMENDATION']
                     self.error_ma_osc.color = 'green'
                     self.error_ma_osc.value = tesla
-                    self.error_ma_osc.update()
-                    time.sleep(5)
+                    await self.error_ma_osc.update_async()
+                    await asyncio.sleep(5)
                     self.error_ma_osc.value = ''
-                    self.error_ma_osc.update()
+                    await self.error_ma_osc.update_async()
                 else:
                     tesla = TA_Handler(
                         symbol=self.symbol.value,
@@ -219,15 +219,22 @@ def Select_ma_all_strategy(page):
                     ).get_analysis().moving_averages['COMPUTE'][self.ma_all_select.value]
                     self.error_ma_osc.color = 'green'
                     self.error_ma_osc.value = tesla
-                    self.error_ma_osc.update()
-                    time.sleep(5)
+                    await self.error_ma_osc.update_async()
+                    await asyncio.sleep(5)
                     self.error_ma_osc.value = ''
-                    self.error_ma_osc.update()
+                    await self.error_ma_osc.update_async()
+            else:
+                self.error_ma_osc.color = 'red'
+                self.error_ma_osc.value = "Нельзя выбрать пустое значение" 
+                await self.error_ma_osc.update_async()
+                await asyncio.sleep(5)
+                self.error_ma_osc.value = ''
+                await self.error_ma_osc.update_async()
             
-        def ma_all_submit(self):
+        async def ma_all_submit(self):
             return ft.ElevatedButton(text="Старт",icon=ft.icons.LANGUAGE, on_click=self.ma_all_go)
         
-        def screener_submit(self):
+        async def screener_submit(self):
             return ft.ElevatedButton(text="Скринер",icon=ft.icons.SAFETY_CHECK_OUTLINED, on_click=self.screener)
 
     select_ma = Select_ma()
@@ -246,8 +253,8 @@ def Select_ma_all_strategy(page):
             ft.Row([select_ma.exchange], alignment=ft.MainAxisAlignment.CENTER),
             ft.Row([select_ma.amount], alignment=ft.MainAxisAlignment.CENTER),
             ft.Row([select_ma.error_ma_osc], alignment=ft.MainAxisAlignment.CENTER),
-            ft.Row([select_ma.ma_all_submit()], alignment=ft.MainAxisAlignment.CENTER),
-            ft.Row([select_ma.screener_submit()], alignment=ft.MainAxisAlignment.CENTER),
+            ft.Row([await select_ma.ma_all_submit()], alignment=ft.MainAxisAlignment.CENTER),
+            ft.Row([await select_ma.screener_submit()], alignment=ft.MainAxisAlignment.CENTER),
         ], 
         auto_scroll=True,
     )

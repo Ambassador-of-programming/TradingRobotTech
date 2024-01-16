@@ -1,6 +1,6 @@
 import flet as ft
 
-def Support(page):
+async def support(page):
     
     content = ft.Column(
         [

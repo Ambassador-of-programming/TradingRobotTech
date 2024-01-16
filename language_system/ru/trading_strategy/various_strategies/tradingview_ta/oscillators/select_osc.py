@@ -2,10 +2,9 @@ from tradingview_ta import TA_Handler, Interval
 from binance.client import Client
 import flet as ft
 import json
-import time
+import asyncio
 
-
-def Select_osc_all_strategy(page):
+async def select_osc_all_strategy(page):
     class Select_osc:
         def __init__(self) -> None:
             self.error_osc = ft.Text(color='red')
@@ -55,7 +54,7 @@ def Select_osc_all_strategy(page):
                 options = [ft.dropdown.Option("Спот")],
             )
             
-        def osc_all_go(self, event):
+        async def osc_all_go(self, event):
             if all([self.osc_all_select.value, self.symbol.value, 
                     self.exchange.value, self.amount.value, 
                     self.interval.value, self.trade_types.value]):
@@ -66,7 +65,6 @@ def Select_osc_all_strategy(page):
                 client = Client(keys_api['binance']['api_key'], keys_api['binance']['secret_key'], {"verify": True, "timeout": None})
                 
                 if self.osc_all_select.value == "RECOMMENDATION":
-                    print(self.osc_all_select.value)
 
                     last_order = {
                         self.symbol.value: 'sell',
@@ -190,12 +188,12 @@ def Select_osc_all_strategy(page):
             else:
                 self.error_osc.color = 'red'
                 self.error_osc.value = "Нельзя выбрать пустое значение" 
-                self.error_osc.update()
-                time.sleep(5)
+                await self.error_osc.update_async()
+                await asyncio.sleep(5)
                 self.error_osc.value = ''
-                self.error_osc.update()
+                await self.error_osc.update_async()
         
-        def screener(self, event):
+        async def screener(self, event):
             if all([self.symbol.value, self.exchange.value, self.interval.value, self.osc_all_select.value]):
                 if self.osc_all_select.value == 'RECOMMENDATION':
                     recommendation  = TA_Handler(
@@ -206,10 +204,10 @@ def Select_osc_all_strategy(page):
                     ).get_analysis().oscillators['RECOMMENDATION']
                     self.error_osc.color = 'green'
                     self.error_osc.value = recommendation 
-                    self.error_osc.update()
-                    time.sleep(5)
+                    await self.error_osc.update_async()
+                    await asyncio.sleep(5)
                     self.error_osc.value = ''
-                    self.error_osc.update()
+                    await self.error_osc.update_async()
 
                 else:
                     all_  = TA_Handler(
@@ -220,16 +218,23 @@ def Select_osc_all_strategy(page):
                     ).get_analysis().oscillators['COMPUTE'][self.osc_all_select.value]
                     self.error_osc.color = 'green'
                     self.error_osc.value = all_
-                    self.error_osc.update()
-                    time.sleep(5)
+                    await self.error_osc.update_async()
+                    await asyncio.sleep(5)
                     self.error_osc.value = ''
-                    self.error_osc.update()
+                    await self.error_osc.update_async() 
                     
+            else:
+                self.error_osc.color = 'red'
+                self.error_osc.value = "Нельзя выбрать пустое значение" 
+                await self.error_osc.update_async()
+                await asyncio.sleep(5)
+                self.error_osc.value = ''
+                await self.error_osc.update_async()
 
-        def osc_all_submit(self):
+        async def osc_all_submit(self):
             return ft.ElevatedButton(text="Старт",icon=ft.icons.LANGUAGE, on_click=self.osc_all_go)
         
-        def screener_submit(self):
+        async def screener_submit(self):
             return ft.ElevatedButton(text="Скринер",icon=ft.icons.SAFETY_CHECK_OUTLINED, on_click=self.screener)
 
     select_osc = Select_osc()
@@ -248,8 +253,8 @@ def Select_osc_all_strategy(page):
             ft.Row([select_osc.exchange], alignment=ft.MainAxisAlignment.CENTER),
             ft.Row([select_osc.amount], alignment=ft.MainAxisAlignment.CENTER),
             ft.Row([select_osc.error_osc], alignment=ft.MainAxisAlignment.CENTER),
-            ft.Row([select_osc.osc_all_submit()], alignment=ft.MainAxisAlignment.CENTER),
-            ft.Row([select_osc.screener_submit()], alignment=ft.MainAxisAlignment.CENTER),
+            ft.Row([await select_osc.osc_all_submit()], alignment=ft.MainAxisAlignment.CENTER),
+            ft.Row([await select_osc.screener_submit()], alignment=ft.MainAxisAlignment.CENTER),
         ], 
         auto_scroll=True,
     )

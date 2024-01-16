@@ -1,27 +1,56 @@
 import flet as ft
-from flet import Text
+import asyncio
 import time
+import aiofiles
 import json
 
-def SettingsView(page):
-    def toggle_dark_mode(e):
+async def settings_view(page: ft.Page):
+    async def toggle_dark_mode(event):
         if page.theme_mode == "dark":
             page.theme_mode = "light"
-            page.update()
+            await page.update_async()
         else: 
             page.theme_mode = "dark"
-            page.update()
+            await page.update_async()
 
-    def resize_screen(e):
+    async def resize_screen(event):
         if page.window_full_screen == False:
             page.window_full_screen = True
-            page.update()
+            await page.update_async()
         else: 
             page.window_full_screen = False
-            page.update()
+            await page.update_async()
 
-    def exit_app(e):
-        page.window_destroy()
+    async def exit_app(event):
+        async def dialog_dismissed(event):
+            await page.close_dialog_async()
+
+        async def exit_app(event):
+            await page.window_destroy_async()
+
+        cupertino_alert_dialog = ft.CupertinoAlertDialog(
+        # title=ft.Text("Cupertino Alert Dialog"),
+        content=ft.Text("Вы хотите закрыть приложение?"),
+        actions=[
+            ft.CupertinoDialogAction(
+                "Да",
+                is_destructive_action=True,
+                on_click=exit_app,
+                ),
+
+            ft.CupertinoDialogAction(
+                text="Отмена",
+                on_click=dialog_dismissed,
+                ),
+            ],
+        )
+        page.dialog = cupertino_alert_dialog
+        cupertino_alert_dialog.open = True
+        await page.update_async()
+
+
+    async def check_update(event):
+        return await page.go_async('/settings/update')
     
     # выбор языка приложения
     class Language_selection:
@@ -37,131 +66,128 @@ def SettingsView(page):
                            ]
             )
 
-        def language_select(self, event):
+        async def language_select(self, event):
             if self.language_selects.value == None:
                 self.error_language.color = 'red'
                 self.error_language.value = "Нельзя выбрать пустое значение" 
-                self.error_language.update()
-                time.sleep(5)
+                await self.error_language.update_async()
+                await asyncio.sleep(5)
                 self.error_language.value = ''
-                self.error_language.update()
+                await self.error_language.update_async()
             else:
-                with open('config\settings_secret.json', 'r') as file:
-                    data = json.load(file)
+                async with aiofiles.open('config\settings_secret.json', mode='r') as file:
+                    data = json.loads(await file.read())
                 data['system_language'] = self.language_selects.value
-                with open('config\settings_secret.json', 'w') as file:
-                    json.dump(data, file, indent=4)
+                async with aiofiles.open('config\settings_secret.json', mode='w') as file:
+                    json.dump(data, await file.write(), indent=4)
                 # page.update()
                 self.error_language.color = 'green'
                 self.error_language.value = 'Успешно обновлено'
-                self.error_language.update()
-                time.sleep(5)
+                await self.error_language.update_async()
+                await asyncio.sleep(5)
                 self.error_language.value = ''
-                self.error_language.update()
+                await self.error_language.update_async()
 
-        def language_submit(self):
+        async def language_submit(self):
             return ft.ElevatedButton(text="Выбрать", icon=ft.icons.LANGUAGE, on_click=self.language_select)
     
-    # Удаление данных api 
-    class Delete_birja():
-        with open('config\settings_secret.json', 'r') as file:
-            data = json.load(file)
-            keys = data["keys_api"].keys()
+    
+    async with aiofiles.open('config\settings_secret.json', mode='r') as file:
+        data = json.loads(await file.read())
+        keys = data["keys_api"].keys()
         options  = []
         for key in keys:
             option = ft.dropdown.Option(key)  # Создаем объект Option для текущего ключа
             options.append(option)
+            
+    # def __init__(self, table: ft.DataTable) -> None:
+    delete_table = ft.DataTable
+    error_delete_ex = ft.Text(color='red')
+    delete_dropdown = ft.Dropdown(
+            width=250,
+            label='Выберите биржу для удаления',
+            options=options)
+    
+    async def delete_exc(event):
+        if delete_dropdown.value == None:
+            error_delete_ex.color = 'red'
+            error_delete_ex.value = "Нельзя очистить пустое значение" 
+            await error_delete_ex.update_async()
+            await asyncio.sleep(5)
+            error_delete_ex.value = ''
+            await error_delete_ex.update_async()
+        else:
+            async with aiofiles.open('config\settings_secret.json', mode='r') as file:
+                data = json.loads(await file.read())
+            data["keys_api"][delete_dropdown.value]['api_key'] = None
+            async with aiofiles.open('config\settings_secret.json', mode='w') as file:
+                await file.write(json.dumps(data, indent=4))
+            data["keys_api"][delete_dropdown.value]['secret_key'] = None
+            async with aiofiles.open('config\settings_secret.json', mode='w') as file:
+                await file.write(json.dumps(data, indent=4))
 
-        def __init__(self, table: ft.DataTable) -> None:
-            self.table = table
-            self.error_delete_ex = ft.Text(color='red')
-            self.dropdown = ft.Dropdown(
-                width=250,
-                label='Выберите биржу',
-                options=self.options)
-        
-        def delete_exc(self, event):
-            if self.dropdown.value == None:
-                self.error_delete_ex.color = 'red'
-                self.error_delete_ex.value = "Нельзя очистить пустое значение" 
-                self.error_delete_ex.update()
-                time.sleep(5)
-                self.error_delete_ex.value = ''
-                self.error_delete_ex.update()
-
-            else:
-                self.data["keys_api"][self.dropdown.value]['api_key'] = None
-                with open('config\settings_secret.json', 'w') as file:
-                    json.dump(self.data, file, indent=4)
-                self.data["keys_api"][self.dropdown.value]['secret_key'] = None
-                with open('config\settings_secret.json', 'w') as file:
-                    json.dump(self.data, file, indent=4)
-
-                options_api_key_values = []  # Здесь будем хранить значения api_key
-                options_secret_key_values = []  # Здесь будем хранить значения secret_key
-
-                # Список выпадающей биржи
-                with open('config\settings_secret.json', 'r') as file:
-                    data = json.load(file)
-                    keys_api = data["keys_api"]
-
-                for key, value in keys_api.items():
-                    if "api_key" in value:
-                        api_keys = ft.DataCell(ft.Text(value["api_key"], no_wrap=False, width=70, selectable=True))
-                        options_api_key_values.append(api_keys)
-                    if "secret_key" in value:
-                        secret_key = ft.DataCell(ft.Text(value["secret_key"], no_wrap=False, width=70, selectable=True))
-                        options_secret_key_values.append(secret_key)
-
-                text_apikey = ft.DataRow(cells=options_api_key_values) 
-                text_secretkey = ft.DataRow(cells=options_secret_key_values) 
-                self.table.rows=[text_apikey, text_secretkey]
-
-                self.table.update()
-                
-                self.error_delete_ex.color = 'green'
-                self.error_delete_ex.value = 'Успешно очищено'
-                self.error_delete_ex.update()
-                time.sleep(5)
-                self.error_delete_ex.value = ''
-                self.error_delete_ex.update()
-
-        # Кнопка для выпадающей биржи
-        def submit_delete(self):
-            return ft.ElevatedButton(text="Очистить", icon=ft.icons.CLEAR, on_click=self.delete_exc)
-        
-    class DataTableAddKey:
-        def __init__(self) -> None:
-            self.table = ft.DataTable()
-            # Список выпадающей биржи
-            with open('config\settings_secret.json', 'r') as file:
-                data = json.load(file)
-                keys = data["keys_api"].keys()
-                keys_api = data["keys_api"]
-            options_colomns = []
-            for key in keys:
-                options_colomn = ft.DataColumn(
-                                        label=ft.Text(key),
-                                        visible=True,                                
-                                    )
-                options_colomns.append(options_colomn)\
-                
-            self.table.columns = [title for title in options_colomns]
             options_api_key_values = []  # Здесь будем хранить значения api_key
             options_secret_key_values = []  # Здесь будем хранить значения secret_key
+            # Список выпадающей биржи
+            async with aiofiles.open('config\settings_secret.json', mode='r') as file:
+                data = json.loads(await file.read())
+            keys_api = data["keys_api"]
             for key, value in keys_api.items():
                 if "api_key" in value:
                     api_keys = ft.DataCell(ft.Text(value["api_key"], no_wrap=False, width=70, selectable=True))
                     options_api_key_values.append(api_keys)
-
                 if "secret_key" in value:
                     secret_key = ft.DataCell(ft.Text(value["secret_key"], no_wrap=False, width=70, selectable=True))
                     options_secret_key_values.append(secret_key)
-
             text_apikey = ft.DataRow(cells=options_api_key_values) 
             text_secretkey = ft.DataRow(cells=options_secret_key_values) 
-            self.table.rows=[text_apikey, text_secretkey]
+            delete_table.rows = [text_apikey, text_secretkey]
+            await delete_table.update_async()
+            
+            error_delete_ex.color = 'green'
+            error_delete_ex.value = 'Успешно очищено'
+            await error_delete_ex.update_async()
+            await asyncio.sleep(5)
+            error_delete_ex.value = ''
+            await error_delete_ex.update_async()
 
+    # Кнопка для выпадающей биржи
+    async def submit_delete():
+        return ft.ElevatedButton(text="Очистить", icon=ft.icons.CLEAR, on_click=delete_exc)
+        
+    async with aiofiles.open('config\settings_secret.json', mode='r') as file:
+        data = json.loads(await file.read())
+        keys = data["keys_api"].keys()
+        keys_api = data["keys_api"]
+    options_colomns = []
+    for key in keys:
+        options_colomn = ft.DataColumn(
+                                label=ft.Text(key),
+                                visible=True,                                
+                            )
+        options_colomns.append(options_colomn)
+    
+    async with aiofiles.open('config\settings_secret.json', mode='r') as file:
+        data = json.loads(await file.read())
+        keys = data["keys_api"].keys()
+        keys_api = data["keys_api"]        
+    
+    table = ft.DataTable()
+    table.columns = [title for title in options_colomns]
+    options_api_key_values = []  # Здесь будем хранить значения api_key
+    options_secret_key_values = []  # Здесь будем хранить значения secret_key
+    for key, value in keys_api.items():
+        if "api_key" in value:
+            api_keys = ft.DataCell(ft.Text(value["api_key"], no_wrap=False, width=70, selectable=True))
+            options_api_key_values.append(api_keys)
+        if "secret_key" in value:
+            secret_key = ft.DataCell(ft.Text(value["secret_key"], no_wrap=False, width=70, selectable=True))
+            options_secret_key_values.append(secret_key)
+    text_apikey = ft.DataRow(cells=options_api_key_values) 
+    text_secretkey = ft.DataRow(cells=options_secret_key_values) 
+    table.rows=[text_apikey, text_secretkey]
+
+    
     class FormAddKey():
         with open('config\settings_secret.json', 'r') as file:
             data = json.load(file)
@@ -186,8 +212,8 @@ def SettingsView(page):
                 label='Выберите биржу',
                 options=self.options)
 
-        def save_data(self, event):
-            values: list = [self.dropdown.value,self.text_apikey.value.strip(), self.text_secretkey.value.strip()]
+        async def save_data(self, event):
+            values: list = [self.dropdown.value, self.text_apikey.value.strip(), self.text_secretkey.value.strip()]
             # check all fields first ...
             if all(values):
                 with open('config\settings_secret.json', 'r') as file:
@@ -220,27 +246,27 @@ def SettingsView(page):
                 text_secretkey = ft.DataRow(cells=options_secret_key_values) 
                 self.table.rows=[text_apikey, text_secretkey]
 
-                self.table.update()
+                await self.table.update_async()
 
                 self.error_apikey.color = 'green'
                 self.error_apikey.value = 'Успешно добавлено'
-                self.error_apikey.update()
-                time.sleep(5)
+                await self.error_apikey.update_async()
+                await asyncio.sleep(5)
                 self.error_apikey.value = ''
-                self.error_apikey.update()
+                await self.error_apikey.update_async()
 
             else:
                 self.error_apikey.color = 'red'
                 self.error_apikey.value = "Нельзя добавить пустое значение" 
-                self.error_apikey.update()
-                time.sleep(5)
+                await self.error_apikey.update_async()
+                await asyncio.sleep(5)
                 self.error_apikey.value = ''
-                self.error_apikey.update()
+                await self.error_apikey.update_async()
 
     language_selection = Language_selection()
-    datatable_add_key = DataTableAddKey()   
-    form_add_key = FormAddKey(datatable_add_key.table)
-    delete_birja = Delete_birja(datatable_add_key.table)
+    datatable_add_key = table  
+    form_add_key = FormAddKey(datatable_add_key)
+    delete_table = datatable_add_key
 
     content = ft.Column(
         [
@@ -266,7 +292,7 @@ def SettingsView(page):
 
             ft.Row(
                 [
-                    ft.TextButton("Проверить обновления", icon=ft.icons.UPDATE, on_click=lambda _: page.go('/settings/update'), icon_color="green")
+                    ft.TextButton("Проверить наличие обновлений", icon=ft.icons.UPDATE, on_click=check_update, icon_color="green")
                 ]
             ),
 
@@ -280,7 +306,7 @@ def SettingsView(page):
                 [
                     language_selection.language_selects,
                     language_selection.error_language,
-                    language_selection.language_submit(),
+                    await language_selection.language_submit(),
                 ]
             ),
 
@@ -300,6 +326,7 @@ def SettingsView(page):
                     form_add_key.text_secretkey,
                     form_add_key.error_apikey,
                     form_add_key.add,
+
                 ]
             ),
 
@@ -307,16 +334,16 @@ def SettingsView(page):
             # Удаление API ключей из json файла
             ft.Row(
                 [
-                    delete_birja.dropdown,
-                    delete_birja.error_delete_ex,
-                    delete_birja.submit_delete()
+                    delete_dropdown,
+                    error_delete_ex,
+                    await submit_delete()
                 ]
             ),
 
             # таблица
             ft.Row(
                 controls=[
-                    datatable_add_key.table,
+                    datatable_add_key,
                 ]
             ),
 

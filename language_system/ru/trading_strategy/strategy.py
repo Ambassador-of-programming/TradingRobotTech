@@ -1,7 +1,8 @@
 import flet as ft
 import time
+import asyncio
 
-def Trading_Strategy(page):
+async def trading_strategy(page):
     class Select_strategy:
         def __init__(self) -> None:
             self.error_language = ft.Text(color='red')
@@ -13,21 +14,27 @@ def Trading_Strategy(page):
                 ]
             )
 
-        def language_select(self, event):
+        async def language_select(self, event):
+          
             if self.language_selects.value == None:
                 self.error_language.color = 'red'
                 self.error_language.value = "Нельзя выбрать пустое значение" 
-                self.error_language.update()
-                time.sleep(5)
-                self.error_language.value = ''
-                self.error_language.update()
+                try:
+                    await self.error_language.update_async()
+                    await asyncio.sleep(5)
+                    self.error_language.value = ''
+                    await self.error_language.update_async()
+                except:
+                    pass
+                
             elif self.language_selects.value == 'Tradingview-ta':
-                page.go('/trading_strategy/select_ma_osc')
+                await page.go_async('/trading_strategy/select_ma_osc')
 
-        def language_submit(self):
+        async def language_submit(self):
             return ft.ElevatedButton(text="Выбрать", icon=ft.icons.LANGUAGE, on_click=self.language_select)
-        
+    
     select_strategy_instance = Select_strategy()
+
     content = ft.Column(
         [
             ft.Row(
@@ -42,20 +49,11 @@ def Trading_Strategy(page):
                 [   
                     select_strategy_instance.language_selects,
                     select_strategy_instance.error_language,
-                    select_strategy_instance.language_submit(),
+                    await select_strategy_instance.language_submit(),
 
                 ],
             alignment=ft.MainAxisAlignment.CENTER
             ),
-
-            ft.Row(
-                [
-                     
-                ]
-            )
-
-
-        
         ]
     )
     return content

@@ -1,0 +1,121 @@
+License Agreement for the use of Trading Robot Tech software
+1. General Provisions
+
+1.1 This license agreement (hereinafter referred to as the "Agreement") regulates the relations between the software developer and the user concerning the use of the Trading Robot Tech software.
+
+2. License granting
+
+2.1 The Developer grants the user a non-exclusive, non-transferable license to use the "Trading Robot Tech" software on the terms and conditions specified in this Agreement.
+
+3. Terms of use
+
+3.1 The User is entitled to use the software only in accordance with its intended purpose.
+
+3.2 It is prohibited to:
+
+copy, modify or distribute the software without written authorization from the developer;
+use the software for illegal purposes;
+circumvent the software protection measures.
+4 Responsibilities of the parties
+
+4.1 The developer is not liable for any damage caused to the user or third parties as a result of the use or inability to use the software.
+
+4.2 The User is responsible for compliance with the terms of this Agreement and possible consequences of its violation.
+
+5. Final Provisions
+
+5.1 All disputes and disagreements arising in connection with the execution or interpretation of this Agreement shall be settled by negotiations between the parties.
+
+5.2 This Agreement is the complete and final agreement between the parties and supersedes all previous oral and written agreements on this subject.
+
+6. Updates and Support
+
+6.1 Developer may provide updates to the Trading Robot Tech software to improve functionality, correct bugs, or ensure compatibility.
+
+6.2. User support may be provided in accordance with the terms and conditions set by the developer. The user is entitled to technical support under the specified terms and conditions.
+
+7. Intellectual Property
+
+7.1 All rights to the Trading Robot Tech software, including, but not limited to, rights to the source code, graphic elements and documentation, belong to the developer.
+
+7.2 The user has no right to use, copy or distribute elements of the software without the express written permission of the developer.
+
+8. Termination of license
+
+8.1. If the user violates the terms of this Agreement, the developer has the right to terminate the user's license with immediate termination of access to the software.
+
+9. Other Terms and Conditions
+
+9.1 If any provision of this Agreement is held by a court of law to be invalid or unenforceable, this shall not affect the validity or enforceability of the other provisions of the Agreement.
+
+9.2 The Developer reserves the right to change the terms of this Agreement at any time by publishing an updated version on the official website or through the application itself.
+
+10. Contact Information
+
+10.1 Users may use the contact information provided in the application or on the official website to contact the developer regarding this Agreement.
+
+
+
+-----------------------------------------------------------------------------------------------------------
+
+
+
+Лицензионное соглашение на использование программного обеспечения "Trading Robot Tech"
+1. Общие положения
+
+1.1. Настоящее лицензионное соглашение (далее — "Соглашение") регулирует отношения между разработчиком программного обеспечения и пользователем, касающиеся использования программного обеспечения "Trading Robot Tech".
+
+2. Предоставление лицензии
+
+2.1. Разработчик предоставляет пользователю неисключительную, не передаваемую лицензию на использование программного обеспечения "Trading Robot Tech" на условиях, указанных в данном Соглашении.
+
+3. Условия использования
+
+3.1. Пользователь имеет право использовать программное обеспечение только в соответствии с его назначением.
+
+3.2. Запрещается:
+
+копировать, модифицировать или распространять программное обеспечение без письменного разрешения разработчика;
+использовать программное обеспечение в незаконных целях;
+обходить меры защиты программного обеспечения.
+4. Ответственность сторон
+
+4.1. Разработчик не несет ответственности за любой ущерб, причиненный пользователю или третьим лицам в результате использования или невозможности использования программного обеспечения.
+
+4.2. Пользователь несет ответственность за соблюдение условий данного Соглашения и возможные последствия его нарушения.
+
+5. Заключительные положения
+
+5.1. Все споры и разногласия, возникающие в связи с исполнением или толкованием данного Соглашения, разрешаются путем переговоров между сторонами.
+
+5.2. Данный Соглашение является полным и окончательным соглашением между сторонами и отменяет все предыдущие устные и письменные договоренности по данному предмету.
+
+6. Обновления и поддержка
+
+6.1. Разработчик вправе предоставлять обновления программного обеспечения "Trading Robot Tech" с целью улучшения функциональности, исправления ошибок или обеспечения совместимости.
+
+6.2. Поддержка пользователей может предоставляться в соответствии с условиями, установленными разработчиком. Пользователь имеет право на техническую поддержку в рамках указанных условий.
+
+7. Интеллектуальная собственность
+
+7.1. Все права на программное обеспечение "Trading Robot Tech", включая, но не ограничиваясь, права на исходный код, графические элементы и документацию, принадлежат разработчику.
+
+7.2. Пользователь не имеет права на использование, копирование или распространение элементов программного обеспечения без явного письменного разрешения разработчика.
+
+8. Прекращение лицензии
+
+8.1. В случае нарушения пользователем условий данного Соглашения, разработчик вправе аннулировать лицензию пользователя с немедленным прекращением доступа к программному обеспечению.
+
+9. Прочие условия
+
+9.1. Если какое-либо положение данного Соглашения признано судом недействительным или неосуществимым, это не влияет на действительность или осуществимость других положений Соглашения.
+
+9.2. Разработчик оставляет за собой право в любое время изменять условия данного Соглашения, опубликовав обновленную версию на официальном веб-сайте или через само приложение.
+
+10. Контактная информация
+
+10.1. Для связи с разработчиком по вопросам, касающимся данного Соглашения, пользователи могут использовать контактную информацию, указанную в приложении или на официальном веб-сайте.
+
+
+
+

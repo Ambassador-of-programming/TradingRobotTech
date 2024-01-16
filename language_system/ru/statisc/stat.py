@@ -1,6 +1,6 @@
 import flet as ft
 
-def Statistic(page):
+async def statistic(page):
     
     content = ft.Column(
         [

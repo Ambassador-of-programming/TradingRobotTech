@@ -1,7 +1,7 @@
 import flet as ft
-import time
+import asyncio
 
-def Select_ta_ma_osc(page):
+async def select_ta_ma_osc(page):
     class Select_ma_ocs:
         def __init__(self) -> None:
             self.error_ma_osc = ft.Text(color='red')
@@ -12,22 +12,22 @@ def Select_ta_ma_osc(page):
                            ft.dropdown.Option("Oscillators"),
                            ]
                 )
-        def ma_osc_go(self, event):
+        async def ma_osc_go(self, event):
             if self.ma_osc_select.value is not None:
                 if self.ma_osc_select.value == "Moving Averages":
-                    return page.go("/trading_strategy/select_ma_osc/moving_averages/select_ma_all_strategy")
+                    return await page.go_async("/trading_strategy/select_ma_osc/moving_averages/select_ma_all_strategy")
 
                 elif self.ma_osc_select.value == "Oscillators":
-                    return page.go("/trading_strategy/select_ma_osc/oscillators/select_osc_all_strategy")
+                    return await page.go_async("/trading_strategy/select_ma_osc/oscillators/select_osc_all_strategy")
             else:
                 self.error_ma_osc.color = 'red'
                 self.error_ma_osc.value = "Нельзя выбрать пустое значение" 
-                self.error_ma_osc.update()
-                time.sleep(5)
+                await self.error_ma_osc.update_async()
+                await asyncio.sleep(5)
                 self.error_ma_osc.value = ''
-                self.error_ma_osc.update()
+                await self.error_ma_osc.update_async()
             
-        def ma_osc_submit(self):
+        async def ma_osc_submit(self):
             return ft.ElevatedButton(text="Выбрать", icon=ft.icons.LANGUAGE, on_click=self.ma_osc_go)
 
     select_ma_ocs = Select_ma_ocs()
@@ -44,7 +44,7 @@ def Select_ta_ma_osc(page):
                 [
                     select_ma_ocs.ma_osc_select,
                     select_ma_ocs.error_ma_osc,
-                    select_ma_ocs.ma_osc_submit()
+                    await select_ma_ocs.ma_osc_submit()
 
                 ],
             alignment=ft.MainAxisAlignment.CENTER
