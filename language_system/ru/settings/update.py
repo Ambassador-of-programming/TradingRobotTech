@@ -1,5 +1,6 @@
 import flet as ft
 import aiohttp
+from current_version import current_version
 
 async def update_app(page):
     content = ft.Column(
@@ -14,11 +15,15 @@ async def update_app(page):
             alignment=ft.MainAxisAlignment.CENTER
             ),
 
-
             ft.Row(
                 [
                     ft.Text(
-                        "Раздел обновление находится на стадии разработки. В новых обновлениях она появится",)
+                        f"У вас установлена версия приложения:",
+                    ),
+                    ft.Text(
+                        current_version,
+                        color='yellow'
+                    ),
                 ]
             ),
         ]

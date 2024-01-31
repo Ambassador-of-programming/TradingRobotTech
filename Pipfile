@@ -4,16 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-aiogram = "*"
 flet = "*"
 tradingview-ta = "*"
 python-binance = "*"
 nuitka = "==1.8.6"
 aiofiles = "*"
-plotly = "*"
-pandas = "*"
-kaleido = {extras = ["plotlyjs"], version = "*"}
-matplotlib = "*"
 
 [dev-packages]
 

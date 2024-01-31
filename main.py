@@ -1,18 +1,33 @@
 import flet as ft
 import json
 import aiofiles
-import asyncio
 from current_version import current_version
 
 async def main(page: ft.Page):
     
     page.title = f'TradingRobotTech {current_version}'
     page.theme_mode = "dark"
+    page.scroll = 'HIDDEN'
+    page.bgcolor = None
+    # page.padding = 50
+
     # page.window_full_screen = True
 
     async with aiofiles.open('config\settings_secret.json', 'r') as file:
         data = json.loads(await file.read())
         language_system = data['system_language']
+
+    async def save_router_page_json(**kwargs):
+        # Асинхронное чтение данных из файла JSON
+        async with aiofiles.open('config/settings_secret.json', mode='r') as file:
+            data = json.loads(await file.read())
+
+        # Обновление данных в page_router
+        data['page_router'] = list(kwargs.keys())
+
+        # Асинхронная запись обновленных данных обратно в файл JSON
+        async with aiofiles.open('config/settings_secret.json', mode='w') as file:
+            await file.write(json.dumps(data, indent=4))
 
     if language_system == 'Russian':
         from language_system.ru.navigation.FletRouter import Router
@@ -30,6 +45,7 @@ async def main(page: ft.Page):
         from language_system.ru.trading_strategy.various_strategies.tradingview_ta.select_ma_s import select_ta_ma_osc
         from language_system.ru.trading_strategy.various_strategies.tradingview_ta.moving_averages.select_ma_ave import select_ma_all_strategy
         from language_system.ru.trading_strategy.various_strategies.tradingview_ta.oscillators.select_osc import select_osc_all_strategy
+        from language_system.ru.support.careers import careers
         
         page.appbar = await appbar(page)
         router_page = {
@@ -42,22 +58,13 @@ async def main(page: ft.Page):
             '/backtestings': await backtesting(page),
             '/statistics': await statistic(page),
             '/support': await support(page), 
+            '/careers': await careers(page),
             '/settings': await settings_view(page),
             '/settings/update': await update_app(page),
         }
 
-        myRouter = Router(trading_strategy=router_page['/trading_strategy'],
-                          select_ma_osc=router_page['/trading_strategy/select_ma_osc'],
-                          select_ma_all_strategy=router_page['/trading_strategy/select_ma_osc/moving_averages/select_ma_all_strategy'],
-                          select_osc_all_strategy=router_page['/trading_strategy/select_ma_osc/oscillators/select_osc_all_strategy'],
-                          ai_trading=router_page['/ai_trading'],
-                          crypto_arbitrage=router_page['/crypto_arbitrage'],
-                          backtestings=router_page['/backtestings'],
-                          statistics=router_page['/statistics'],
-                          support=router_page['/support'],
-                          settings=router_page['/settings'],
-                          settings_update=router_page['/settings/update'])
-
+        myRouter = Router(**router_page)
+        await save_router_page_json(**router_page)
         page.on_route_change = myRouter.route_change
 
         await page.add_async(

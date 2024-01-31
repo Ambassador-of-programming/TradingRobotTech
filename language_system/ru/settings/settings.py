@@ -29,17 +29,16 @@ async def settings_view(page: ft.Page):
             await page.window_destroy_async()
 
         cupertino_alert_dialog = ft.CupertinoAlertDialog(
-        # title=ft.Text("Cupertino Alert Dialog"),
         content=ft.Text("Вы хотите закрыть приложение?"),
         actions=[
             ft.CupertinoDialogAction(
-                "Да",
+                text = 'Да',
                 is_destructive_action=True,
                 on_click=exit_app,
                 ),
 
             ft.CupertinoDialogAction(
-                text="Отмена",
+                text = "Отмена",
                 on_click=dialog_dismissed,
                 ),
             ],
@@ -186,18 +185,19 @@ async def settings_view(page: ft.Page):
     text_apikey = ft.DataRow(cells=options_api_key_values) 
     text_secretkey = ft.DataRow(cells=options_secret_key_values) 
     table.rows=[text_apikey, text_secretkey]
-
     
     class FormAddKey():
-        with open('config\settings_secret.json', 'r') as file:
-            data = json.load(file)
-            keys = data["keys_api"].keys()
-        options  = []
-        for key in keys:
-            option = ft.dropdown.Option(key)  # Создаем объект Option для текущего ключа
-            options.append(option)
+        async def options_data():
+            with open('config\settings_secret.json', 'r') as file:
+                data = json.load(file)
+                keys = data["keys_api"].keys()
+            options  = []
+            for key in keys:
+                option = ft.dropdown.Option(key)  # Создаем объект Option для текущего ключа
+                options.append(option)
+            return options
 
-        def __init__(self, table: ft.DataTable) -> None:
+        def __init__(self, table: ft.DataTable, options) -> None:
             self.table = table
             self.text_apikey = ft.TextField(label='Введите Api Key', password=True, can_reveal_password=True)
             self.text_secretkey = ft.TextField(label='Введите Secret Key', password=True,can_reveal_password=True)
@@ -210,7 +210,7 @@ async def settings_view(page: ft.Page):
             self.dropdown = ft.Dropdown(
                 width=250,
                 label='Выберите биржу',
-                options=self.options)
+                options=options)
 
         async def save_data(self, event):
             values: list = [self.dropdown.value, self.text_apikey.value.strip(), self.text_secretkey.value.strip()]
@@ -262,10 +262,10 @@ async def settings_view(page: ft.Page):
                 await asyncio.sleep(5)
                 self.error_apikey.value = ''
                 await self.error_apikey.update_async()
-
+                
     language_selection = Language_selection()
     datatable_add_key = table  
-    form_add_key = FormAddKey(datatable_add_key)
+    form_add_key = FormAddKey(datatable_add_key, options=await FormAddKey.options_data())
     delete_table = datatable_add_key
 
     content = ft.Column(
@@ -301,7 +301,11 @@ async def settings_view(page: ft.Page):
                     ft.TextButton("Изменение размера экрана", icon=ft.icons.DISPLAY_SETTINGS_OUTLINED, on_click=resize_screen, icon_color="yellow")
                 ]
             ),
+
+            # выбор стартовой страницы при запуска приложения
+
             
+            # Выбор языка приложения из выподающей меню
             ft.Row(
                 [
                     language_selection.language_selects,
@@ -330,7 +334,6 @@ async def settings_view(page: ft.Page):
                 ]
             ),
 
-
             # Удаление API ключей из json файла
             ft.Row(
                 [
@@ -340,15 +343,13 @@ async def settings_view(page: ft.Page):
                 ]
             ),
 
-            # таблица
+            # таблица с API ключами
             ft.Row(
                 controls=[
                     datatable_add_key,
-                ]
+                ],
             ),
-
         ],
-        scroll='HIDDEN',
     )
     
     

@@ -15,6 +15,8 @@ async def appbar(page):
         return await page.go_async('/support')
     async def go_settings(event):
         return await page.go_async('/settings')
+    async def go_careers(event):
+        return await page.go_async('/careers')
     
     appbar = ft.AppBar(
             # leading=ft.Icon(ft.icons.TAG_FACES_ROUNDED),
@@ -30,7 +32,9 @@ async def appbar(page):
                 ft.IconButton(ft.icons.SETTINGS_CELL, on_click=go_backtestings),
                 ft.IconButton(ft.icons.ANALYTICS, on_click=go_statistics),
                 ft.IconButton(ft.icons.SUPPORT_AGENT, on_click=go_support),
+                ft.IconButton(ft.icons.SUPPORT, on_click=go_careers),
                 ft.IconButton(ft.icons.SETTINGS_ROUNDED, on_click=go_settings),
+                
             ]
         )
     return appbar
