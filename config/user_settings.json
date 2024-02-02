@@ -1,18 +1,19 @@
 {
     "system_language": "Russian",
     "page_router": [
-    "/trading_strategy",
-    "/trading_strategy/select_ma_osc",
-    "/trading_strategy/select_ma_osc/moving_averages/select_ma_all_strategy",
-    "/trading_strategy/select_ma_osc/oscillators/select_osc_all_strategy",
-    "/ai_trading",
-    "/crypto_arbitrage",
-    "/backtestings",
-    "/statistics",
-    "/support",
-    "/careers",
-    "/settings",
-    "/settings/update"
+        "/trading_strategy",
+        "/trading_strategy/select_ma_osc",
+        "/trading_strategy/select_ma_osc/moving_averages/select_ma_all_strategy",
+        "/trading_strategy/select_ma_osc/oscillators/select_osc_all_strategy",
+        "/ai_trading",
+        "/crypto_arbitrage",
+        "/backtestings",
+        "/statistics",
+        "/support",
+        "/careers",
+        "/settings",
+        "/settings/update"
     ],
-    "page_background_color": null
+    "page_background_color": null,
+    "scale": 1
 }

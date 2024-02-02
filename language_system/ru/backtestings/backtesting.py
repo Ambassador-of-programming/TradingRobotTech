@@ -50,6 +50,7 @@ async def backtesting(page):
                 ],
                     alignment=ft.MainAxisAlignment.CENTER,
             ),
-        ]
+        ],
+        scale=None
     )
     return content

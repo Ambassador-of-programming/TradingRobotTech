@@ -1,6 +1,5 @@
 import flet as ft
 import asyncio
-import time
 import aiofiles
 import json
 
@@ -47,10 +46,51 @@ async def settings_view(page: ft.Page):
         cupertino_alert_dialog.open = True
         await page.update_async()
 
-
     async def check_update(event):
         return await page.go_async('/settings/update')
     
+    class EditResizeScale:
+        def __init__(self) -> None:
+            self.scale_textfield = ft.TextField(label="Изменить маштаб", hint_text="Только целое или дробное число (1 или 0.1)")
+            self.scale_error = None
+
+        async def resize_scale(self):
+            async with aiofiles.open('config/user_settings.json', mode='r') as file:
+                data = json.loads(await file.read())
+            return data['scale']
+    
+        async def __scale_update(self, event):
+            async def convert_to_float_or_str(value):
+                try:
+                    result = float(value)
+                    return result
+                except ValueError:
+                    return value
+            
+            if self.scale_textfield.value is not None and \
+                isinstance(await convert_to_float_or_str(self.scale_textfield.value), (int, float)):
+
+                async with aiofiles.open('config/user_settings.json', mode='r') as file:
+                    data = json.loads(await file.read())
+                data['scale'] = await convert_to_float_or_str(self.scale_textfield.value.strip().replace(" ", ""))
+                async with aiofiles.open('config/user_settings.json', mode='w') as file:
+                    await file.write(json.dumps(data, indent=4))
+                    
+                content.scale = await self.resize_scale()
+                await page.update_async()
+            else:
+                print("у вас не int или float")
+
+        async def scale_button(self):
+            button = ft.IconButton(
+                icon=ft.icons.UPDATE,
+                icon_size=20,
+                tooltip="Изменить маштаб",
+                on_click=self.__scale_update,
+            )
+
+            return button
+            
     # выбор языка приложения
     class Language_selection:
         def __init__(self) -> None:
@@ -74,11 +114,11 @@ async def settings_view(page: ft.Page):
                 self.error_language.value = ''
                 await self.error_language.update_async()
             else:
-                async with aiofiles.open('config\settings_secret.json', mode='r') as file:
+                async with aiofiles.open('config/settings_secret.json', mode='r') as file:
                     data = json.loads(await file.read())
                 data['system_language'] = self.language_selects.value
-                async with aiofiles.open('config\settings_secret.json', mode='w') as file:
-                    json.dump(data, await file.write(), indent=4)
+                async with aiofiles.open('config/settings_secret.json', mode='w') as file:
+                    await file.write(json.dumps(data, indent=4))
                 # page.update()
                 self.error_language.color = 'green'
                 self.error_language.value = 'Успешно обновлено'
@@ -91,7 +131,7 @@ async def settings_view(page: ft.Page):
             return ft.ElevatedButton(text="Выбрать", icon=ft.icons.LANGUAGE, on_click=self.language_select)
     
     
-    async with aiofiles.open('config\settings_secret.json', mode='r') as file:
+    async with aiofiles.open('config/settings_secret.json', mode='r') as file:
         data = json.loads(await file.read())
         keys = data["keys_api"].keys()
         options  = []
@@ -116,19 +156,19 @@ async def settings_view(page: ft.Page):
             error_delete_ex.value = ''
             await error_delete_ex.update_async()
         else:
-            async with aiofiles.open('config\settings_secret.json', mode='r') as file:
+            async with aiofiles.open('config/settings_secret.json', mode='r') as file:
                 data = json.loads(await file.read())
             data["keys_api"][delete_dropdown.value]['api_key'] = None
-            async with aiofiles.open('config\settings_secret.json', mode='w') as file:
+            async with aiofiles.open('config/settings_secret.json', mode='w') as file:
                 await file.write(json.dumps(data, indent=4))
             data["keys_api"][delete_dropdown.value]['secret_key'] = None
-            async with aiofiles.open('config\settings_secret.json', mode='w') as file:
+            async with aiofiles.open('config/settings_secret.json', mode='w') as file:
                 await file.write(json.dumps(data, indent=4))
 
             options_api_key_values = []  # Здесь будем хранить значения api_key
             options_secret_key_values = []  # Здесь будем хранить значения secret_key
             # Список выпадающей биржи
-            async with aiofiles.open('config\settings_secret.json', mode='r') as file:
+            async with aiofiles.open('config/settings_secret.json', mode='r') as file:
                 data = json.loads(await file.read())
             keys_api = data["keys_api"]
             for key, value in keys_api.items():
@@ -154,7 +194,7 @@ async def settings_view(page: ft.Page):
     async def submit_delete():
         return ft.ElevatedButton(text="Очистить", icon=ft.icons.CLEAR, on_click=delete_exc)
         
-    async with aiofiles.open('config\settings_secret.json', mode='r') as file:
+    async with aiofiles.open('config/settings_secret.json', mode='r') as file:
         data = json.loads(await file.read())
         keys = data["keys_api"].keys()
         keys_api = data["keys_api"]
@@ -166,7 +206,7 @@ async def settings_view(page: ft.Page):
                             )
         options_colomns.append(options_colomn)
     
-    async with aiofiles.open('config\settings_secret.json', mode='r') as file:
+    async with aiofiles.open('config/settings_secret.json', mode='r') as file:
         data = json.loads(await file.read())
         keys = data["keys_api"].keys()
         keys_api = data["keys_api"]        
@@ -187,9 +227,10 @@ async def settings_view(page: ft.Page):
     table.rows=[text_apikey, text_secretkey]
     
     class FormAddKey():
+        
         async def options_data():
-            with open('config\settings_secret.json', 'r') as file:
-                data = json.load(file)
+            async with aiofiles.open('config/settings_secret.json', mode='r') as file:
+                data = json.loads(await file.read())
                 keys = data["keys_api"].keys()
             options  = []
             for key in keys:
@@ -216,22 +257,22 @@ async def settings_view(page: ft.Page):
             values: list = [self.dropdown.value, self.text_apikey.value.strip(), self.text_secretkey.value.strip()]
             # check all fields first ...
             if all(values):
-                with open('config\settings_secret.json', 'r') as file:
-                    data = json.load(file)
+                async with aiofiles.open('config/settings_secret.json', mode='r') as file:
+                    data = json.loads(await file.read())
 
                 data["keys_api"][self.dropdown.value]['api_key'] = self.text_apikey.value.strip()
-                with open('config\settings_secret.json', 'w') as file:
-                    json.dump(data, file, indent=4)
+                async with aiofiles.open('config/settings_secret.json', mode='w') as file:
+                    await file.write(json.dumps(data, indent=4))
                 data["keys_api"][self.dropdown.value]['secret_key'] = self.text_secretkey.value.strip()
-                with open('config\settings_secret.json', 'w') as file:
-                    json.dump(data, file, indent=4)
+                async with aiofiles.open('config/settings_secret.json', mode='w') as file:
+                    await file.write(json.dumps(data, indent=4))
                 
                 options_api_key_values = []  # Здесь будем хранить значения api_key
                 options_secret_key_values = []  # Здесь будем хранить значения secret_key
 
                 # Список выпадающей биржи
-                with open('config\settings_secret.json', 'r') as file:
-                    data = json.load(file)
+                async with aiofiles.open('config/settings_secret.json', mode='r') as file:
+                    data = json.loads(await file.read())
                     keys_api = data["keys_api"]
 
                 for key, value in keys_api.items():
@@ -262,7 +303,8 @@ async def settings_view(page: ft.Page):
                 await asyncio.sleep(5)
                 self.error_apikey.value = ''
                 await self.error_apikey.update_async()
-                
+    
+    editresizescale = EditResizeScale()
     language_selection = Language_selection()
     datatable_add_key = table  
     form_add_key = FormAddKey(datatable_add_key, options=await FormAddKey.options_data())
@@ -272,9 +314,15 @@ async def settings_view(page: ft.Page):
         [
             ft.Row(
             [
+                # page.appbar = await appbar(page)
+            ], 
+            ),
+
+            ft.Row(
+            [
                 ft.Text("Мои Настройки", size=30), 
                 ft.IconButton(icon=ft.icons.SETTINGS_ROUNDED, icon_size=30),
-                ], 
+            ], 
             alignment=ft.MainAxisAlignment.CENTER
             ),
 
@@ -302,8 +350,13 @@ async def settings_view(page: ft.Page):
                 ]
             ),
 
-            # выбор стартовой страницы при запуска приложения
-
+            # Изменить маштаб приложения 
+            ft.Row(
+                [
+                    editresizescale.scale_textfield,
+                    await editresizescale.scale_button()
+                ]
+            ),
             
             # Выбор языка приложения из выподающей меню
             ft.Row(
@@ -350,6 +403,7 @@ async def settings_view(page: ft.Page):
                 ],
             ),
         ],
+        scale=await editresizescale.resize_scale()
     )
     
     
